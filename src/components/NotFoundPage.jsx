@@ -8,8 +8,32 @@ export default function NotFoundPage() {
   const attemptedPath = `${pathname}${search}`;
 
   useEffect(() => {
-    document.title = "404 — Página não encontrada | Derick Rufino";
-  }, []);
+    const homeTitle = "Derick Rufino | Desenvolvedor Frontend e Mobile";
+    const homeDescription =
+      "Desenvolvedor frontend e mobile com foco em React, React Native e interfaces digitais com movimento e personalidade.";
+    const notFoundTitle = "404 — Página não encontrada | Derick Rufino";
+    const notFoundDescription = `O endereço ${attemptedPath} não foi encontrado no portfólio de Derick Rufino.`;
+    const setMeta = (selector, value) =>
+      document.querySelector(selector)?.setAttribute("content", value);
+
+    document.title = notFoundTitle;
+    setMeta('meta[name="description"]', notFoundDescription);
+    setMeta('meta[property="og:title"]', notFoundTitle);
+    setMeta('meta[property="og:description"]', notFoundDescription);
+    setMeta('meta[name="twitter:title"]', notFoundTitle);
+    setMeta('meta[name="twitter:description"]', notFoundDescription);
+    setMeta('meta[name="robots"]', "noindex, follow");
+
+    return () => {
+      document.title = homeTitle;
+      setMeta('meta[name="description"]', homeDescription);
+      setMeta('meta[property="og:title"]', homeTitle);
+      setMeta('meta[property="og:description"]', homeDescription);
+      setMeta('meta[name="twitter:title"]', homeTitle);
+      setMeta('meta[name="twitter:description"]', homeDescription);
+      setMeta('meta[name="robots"]', "index, follow");
+    };
+  }, [attemptedPath]);
 
   return (
     <main className="dark relative isolate flex min-h-dvh w-full items-center justify-center overflow-hidden bg-background px-4 py-12">

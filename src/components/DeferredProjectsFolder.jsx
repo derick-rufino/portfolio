@@ -36,7 +36,10 @@ export default function DeferredProjectsFolder() {
   }, []);
 
   return (
-    <div ref={ref} className="flex h-full w-full items-center justify-center">
+    <div
+      ref={ref}
+      className="mt-12 flex h-full w-full items-center justify-center lg:mt-0"
+    >
       {shouldLoad ? (
         <Suspense fallback={<FolderPlaceholder />}>
           <ProjectsFolder />
