@@ -7,6 +7,8 @@ import { Copy, Check, Mail } from "lucide-react";
 import { Tooltip } from "@/components/motion/tooltip";
 import { AnimatedBadge } from "@/components/motion/animated-badge";
 import SectionHeading from "@/components/SectionHeading";
+import CvButton from "@/components/CvButton";
+
 import { EMAIL, GITHUB_URL, LINKEDIN_URL } from "@/data/contact";
 
 const icon = (name) =>
@@ -93,6 +95,9 @@ export default function ContactSection() {
 
         {/* Redes */}
         <ul className="flex flex-wrap gap-2">
+          <li>
+            <CvButton className="bg-card/70 text-foreground hover:bg-card" />
+          </li>
           {SOCIALS.map((social) => (
             <li key={social.label}>
               <a

@@ -22,6 +22,8 @@ import ProjectsFolder from "@/components/ProjectsFolder";
 import ContactSection from "@/components/ContactSection";
 import ProgressiveBlur from "@/components/ProgressiveBlur";
 import SectionHeading from "@/components/SectionHeading";
+import CvButton from "@/components/CvButton";
+
 import { projects } from "@/data/projects";
 
 const SECTIONS = [
@@ -155,7 +157,7 @@ function App() {
       <Analytics />
       <header ref={headerRef} className="sticky top-0 z-50 w-full">
         {/* Progressive blur + leve escurecimento, se estendem um pouco abaixo do header */}
-        <ProgressiveBlur className="-z-10 h-[calc(100%+2.5rem)] bg-background" />
+        <ProgressiveBlur className="-z-10 h-[calc(100%+2.5rem)]" />
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[calc(100%+2.5rem)] bg-linear-to-b from-background/70 to-transparent"
@@ -320,6 +322,7 @@ function App() {
                   className="shrink-0 pl-1.5 font-light tracking-[-0.04em] text-foreground text-[clamp(1.25rem,5cqw,2rem)]"
                 />
               </h2>
+              <CvButton className="mt-5 border border-border bg-background/40 text-foreground backdrop-blur hover:bg-muted" />
             </div>
 
             <div className="image-info flex w-full max-w-xs flex-col items-center pt-4 sm:max-w-sm md:max-w-md md:pt-16 lg:pt-25">
@@ -355,7 +358,7 @@ function App() {
               interface e desenvolvimento.
             </SectionHeading>
 
-            <div className="mx-auto mt-8 grid max-w-xl grid-cols-2 items-stretch gap-3 sm:gap-4 lg:max-w-5xl lg:grid-cols-4">
+            <div className="mx-auto mt-8 grid max-w-xl grid-cols-1 items-stretch gap-3 sm:gap-4 lg:max-w-5xl lg:grid-cols-4">
               {projects.map((project) => (
                 <ProjectCard key={project.title} project={project} />
               ))}

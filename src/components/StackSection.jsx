@@ -91,8 +91,8 @@ export default function StackSection() {
             </p>
           </div>
 
-          {/* Tiles de 6 a 7rem: cabem 3 no celular e mais no desktop */}
-          <ul className="grid grid-cols-[repeat(auto-fill,minmax(6rem,7rem))] gap-2.5">
+          {/* Tiles ligeiramente menores no celular; tamanho original a partir de md. */}
+          <ul className="grid grid-cols-[repeat(auto-fill,minmax(5.25rem,6rem))] gap-2.5 md:grid-cols-[repeat(auto-fill,minmax(6rem,7rem))]">
             {group.items.map((id) => (
               <li key={id}>
                 <TechTile tech={TECH[id]} />

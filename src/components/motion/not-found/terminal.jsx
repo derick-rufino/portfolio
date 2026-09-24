@@ -11,10 +11,9 @@ export function NotFoundTerminal({
   code = NOT_FOUND_DEFAULTS.code,
   title = NOT_FOUND_DEFAULTS.title,
   description = NOT_FOUND_DEFAULTS.description,
+  path = "/",
   homeHref,
-  homeLabel,
-  browseHref,
-  browseLabel
+  homeLabel
 }) {
   return (
     <NotFoundStage className={className}>
@@ -23,7 +22,7 @@ export function NotFoundTerminal({
           <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
           <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
           <span className="h-3 w-3 rounded-full bg-[#28c840]" />
-          <span className="ml-2 text-xs text-white/40">~/beui</span>
+          <span className="ml-2 text-xs text-white/40">~/DevPortfolio</span>
         </div>
         <div className="space-y-1.5 p-4 font-mono text-sm leading-relaxed">
           <TextReveal
@@ -34,7 +33,7 @@ export function NotFoundTerminal({
             yOffset={0}
             spring={TYPE_SPRING}
             className="text-white/80"
-            text="$ cd /page"
+            text={`$ cd ${path}`}
           />
           <TextReveal
             as="p"
@@ -45,7 +44,7 @@ export function NotFoundTerminal({
             yOffset={0}
             spring={TYPE_SPRING}
             className="text-[#ff5f57]"
-            text="cd: no such file or directory: /page"
+            text={`cd: no such file or directory: ${path}`}
           />
           <p className="flex items-center text-white/80">
             <TextReveal
@@ -56,8 +55,9 @@ export function NotFoundTerminal({
               blur={6}
               yOffset={0}
               spring={TYPE_SPRING}
-              text={`$ status ${code}`}
+              text="$ status "
             />
+            <span className="font-semibold text-[#ff5f57]">{code}</span>
             <span className="ml-1 inline-block h-[1.1em] w-[0.55ch] translate-y-[0.12em] bg-white/80 motion-safe:animate-pulse" />
           </p>
         </div>
@@ -71,8 +71,6 @@ export function NotFoundTerminal({
       <NotFoundActions
         homeHref={homeHref}
         homeLabel={homeLabel}
-        browseHref={browseHref}
-        browseLabel={browseLabel}
       />
     </NotFoundStage>
   );
