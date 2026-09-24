@@ -1,0 +1,24 @@
+# Derick Rufino
+
+> Desenvolvedor frontend e mobile, estudante de Desenvolvimento de Software Multiplataforma na Fatec Marília. Trabalha com React, React Native e Expo, cria interfaces com movimento e personalidade e está aberto a oportunidades de estágio e projetos freelance. É curioso e gosta de aprender tecnologias e assuntos diferentes.
+
+Derick combina desenvolvimento web e mobile com atenção a interface e experiência visual. Criativo, Curioso e muito motivado a aprender coisas novas, explora tecnologias e áreas diferentes para ampliar o que consegue construir. Também tem experiência com desenvolvimento assistido por IA usando Claude Code e Codex. Seu portfólio demonstra trabalho com aplicativos React Native, redesign de interfaces, integração com APIs, autenticação, recursos em tempo real e bancos relacionais. Esse conjunto é especialmente relevante para oportunidades de estágio em frontend ou mobile que usem React, React Native ou Expo.
+
+## Sobre
+- [Início](https://derickrufino.vercel.app/#hero): perfil e apresentação
+- [Stack](https://derickrufino.vercel.app/#stack): tecnologias e ferramentas
+- [Projetos](https://derickrufino.vercel.app/#projects): trabalhos selecionados
+- [Contato](https://derickrufino.vercel.app/#contact): formas de contato
+
+## Projetos
+- [Tuctuc](https://derickrufino.vercel.app/#projects): aplicativo mobile de caronas para estudantes, desenvolvido como projeto de TCC com React Native, Expo, Socket.io e MySQL.
+- [Decko Bot](https://tcg-chatbot-frontend.vercel.app/chat): chatbot de IA para TCG, com interface redesenhada, autenticação e integração com uma API Python.
+- [API Amigo Secreto](https://github.com/derick-rufino/api-amigo-secreto): sistema de sorteio com autenticação e visualização individual dos resultados.
+
+## Tecnologias
+HTML, CSS, JavaScript, C, React, React Native, Expo, Tailwind CSS, Node.js, Socket.io, MySQL, SQL Server, Figma, Git, GitHub, Vite, WebStorm, Claude Code e Codex (desenvolvimento assistido por IA).
+
+## Contato
+- E-mail: derickrufino.dev@gmail.com
+- [LinkedIn](https://www.linkedin.com/in/derick-rufino)
+- [GitHub](https://github.com/derick-rufino)
