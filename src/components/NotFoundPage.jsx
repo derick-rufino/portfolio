@@ -1,9 +1,12 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { useLocation } from "react-router";
-import GradientWaves from "@/components/GradientWaves";
 import { NotFoundTerminal } from "@/components/motion/not-found/terminal";
+import { useVisualEffects } from "@/context/VisualEffectsContext";
+
+const GradientWaves = lazy(() => import("@/components/GradientWaves"));
 
 export default function NotFoundPage() {
+  const { ready: effectsReady, reduced: reduceEffects } = useVisualEffects();
   const { pathname, search } = useLocation();
   const attemptedPath = `${pathname}${search}`;
 
@@ -38,27 +41,39 @@ export default function NotFoundPage() {
   return (
     <main className="dark relative isolate flex min-h-dvh w-full items-center justify-center overflow-hidden bg-background px-4 py-12">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 opacity-25 mask-[linear-gradient(to_bottom,transparent,black_25%,black_70%,transparent)]">
-        <GradientWaves
-          horizonColor="bg-background"
-          waveColor="bg-chart-2"
-          crestColor="bg-chart-3"
-          speed={0.35}
-          amplitude={1.5}
-          waveScale={1.1}
-          waveRatio={0.85}
-          swell={24}
-          turbulence={8}
-          tilt={1.5}
-          zoom={1.05}
-          height={4.8}
-          fogDepth={18}
-          detail="low"
-          brightness={0.75}
-          opacity={0.8}
-          mouseInteraction={false}
-          grain={false}
-          className="absolute inset-0"
-        />
+        {!effectsReady || reduceEffects ? (
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "radial-gradient(ellipse at 50% 38%, rgb(255 255 255 / 0.1), transparent 64%), linear-gradient(180deg, rgb(255 255 255 / 0.03), transparent 58%)",
+            }}
+          />
+        ) : (
+          <Suspense fallback={null}>
+            <GradientWaves
+              horizonColor="bg-background"
+              waveColor="bg-chart-2"
+              crestColor="bg-chart-3"
+              speed={0.35}
+              amplitude={1.5}
+              waveScale={1.1}
+              waveRatio={0.85}
+              swell={24}
+              turbulence={8}
+              tilt={1.5}
+              zoom={1.05}
+              height={4.8}
+              fogDepth={18}
+              detail="low"
+              brightness={0.75}
+              opacity={0.8}
+              mouseInteraction={false}
+              grain={false}
+              className="absolute inset-0"
+            />
+          </Suspense>
+        )}
       </div>
 
       <div className="w-full max-w-xl">

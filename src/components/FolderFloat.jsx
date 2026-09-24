@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Matter from 'matter-js';
 import { GITHUB_URL } from '@/data/contact';
+import { useVisualEffects } from '@/context/VisualEffectsContext';
 const { Bodies, Body, Composite, Engine } = Matter;
 
 const DEFAULT_ITEMS = ['Try a warmer palette', 'Tighten the spacing', 'Logo feels small', 'Love the new hero'];
@@ -81,6 +82,7 @@ export default function FolderFloat({
   bounce = 0.3,
   className = ''
 }) {
+  const { reduced } = useVisualEffects();
   const [hasHover, setHasHover] = useState(() =>
     typeof window === 'undefined' || window.matchMedia('(hover: hover) and (pointer: fine)').matches
   );
@@ -106,7 +108,7 @@ export default function FolderFloat({
     live: false
   });
   const latest = useRef({});
-  latest.current = { onSelect, onOpenChange, drift, reduce: false };
+  latest.current = { onSelect, onOpenChange, drift, reduce: reduced };
   const popTimer = useRef(undefined);
   const liveTimer = useRef(undefined);
   const list = items.map((item, i) => {
@@ -270,23 +272,13 @@ export default function FolderFloat({
     // Keep the original CSS drift animation active on touch devices. The
     // physics loop is for hover-capable pointers; starting it on mobile
     // disables the per-pill drift and can leave every pill still.
-    if (!open || !physics || !hasHover || latest.current.reduce) {
+    if (!open || !physics || !hasHover || reduced) {
       stopPhysics();
       return undefined;
     }
     liveTimer.current = setTimeout(startPhysics, openDuration + (n - 1) * stagger + 80);
     return () => clearTimeout(liveTimer.current);
-  }, [open, physics, hasHover, openDuration, stagger, n, startPhysics, stopPhysics]);
-
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const sync = () => {
-      latest.current.reduce = mq.matches;
-    };
-    sync();
-    mq.addEventListener('change', sync);
-    return () => mq.removeEventListener('change', sync);
-  }, []);
+  }, [open, physics, hasHover, reduced, openDuration, stagger, n, startPhysics, stopPhysics]);
 
   useEffect(
     () => () => {
@@ -365,6 +357,7 @@ export default function FolderFloat({
       className={`group relative inline-block text-[13px] leading-none font-medium [width:var(--ff-w)] [padding-top:var(--ff-tab)] [font-family:inherit]${className ? ` ${className}` : ''}`}
       data-open={open || !hasHover ? '' : undefined}
       data-live={live ? '' : undefined}
+      data-reduced={reduced ? '' : undefined}
       data-trigger={trigger}
       onPointerEnter={hover ? () => set(true) : undefined}
       onPointerLeave={
@@ -417,17 +410,18 @@ export default function FolderFloat({
                 pillRefs.current[i] = el;
               }}
               type="button"
-              className="pointer-events-none absolute top-0 left-1/2 m-0 h-[34px] cursor-pointer rounded-[17px] border-0 px-3.5 whitespace-nowrap opacity-0 shadow-[0_4px_12px_rgba(0,0,0,0.14)] outline-none [background:var(--ff-item)] [color:var(--ff-item-ink)] [font:inherit] [transform:translate(-50%,44px)_scale(0.6)] [transform-origin:50%_50%] [-webkit-tap-highlight-color:transparent] [transition:transform_var(--ff-close)_var(--ff-ease-out)_calc((var(--ff-n)-1-var(--i))*var(--ff-stagger)*0.5),opacity_160ms_ease_calc((var(--ff-n)-1-var(--i))*var(--ff-stagger)*0.5+var(--ff-close)*0.45),scale_160ms_var(--ff-ease-out)] group-data-[open]:pointer-events-auto group-data-[open]:opacity-100 group-data-[open]:[transform:translate(calc(-50%+var(--x)),var(--y))_rotate(var(--r))_scale(1)] group-data-[open]:[transition:transform_var(--ff-open)_var(--ff-spring)_calc(var(--i)*var(--ff-stagger)),opacity_160ms_ease_calc(var(--i)*var(--ff-stagger)),scale_160ms_var(--ff-ease-out)] group-data-[live]:cursor-grab group-data-[live]:[transition:scale_160ms_var(--ff-ease-out)] data-[drag]:cursor-grabbing! group-data-[open]:hover:[scale:1.05] group-data-[open]:active:[scale:0.97] data-[pop]:[animation:folder-float-pop_320ms_var(--ff-ease-out)] motion-reduce:[transition:opacity_200ms_ease] motion-reduce:group-data-[open]:[transition:opacity_200ms_ease_calc(var(--i)*var(--ff-stagger))]"
+              className="pointer-events-none absolute top-0 left-1/2 m-0 h-[34px] cursor-pointer rounded-[17px] border-0 px-3.5 whitespace-nowrap opacity-0 shadow-[0_4px_12px_rgba(0,0,0,0.14)] outline-none [background:var(--ff-item)] [color:var(--ff-item-ink)] [font:inherit] [transform:translate(-50%,44px)_scale(0.6)] [transform-origin:50%_50%] [-webkit-tap-highlight-color:transparent] [transition:transform_var(--ff-close)_var(--ff-ease-out)_calc((var(--ff-n)-1-var(--i))*var(--ff-stagger)*0.5),opacity_160ms_ease_calc((var(--ff-n)-1-var(--i))*var(--ff-stagger)*0.5+var(--ff-close)*0.45),scale_160ms_var(--ff-ease-out)] group-data-[open]:pointer-events-auto group-data-[open]:opacity-100 group-data-[open]:[transform:translate(calc(-50%+var(--x)),var(--y))_rotate(var(--r))_scale(1)] group-data-[open]:[transition:transform_var(--ff-open)_var(--ff-spring)_calc(var(--i)*var(--ff-stagger)),opacity_160ms_ease_calc(var(--i)*var(--ff-stagger)),scale_160ms_var(--ff-ease-out)] group-data-[live]:cursor-grab group-data-[live]:[transition:scale_160ms_var(--ff-ease-out)] data-[drag]:cursor-grabbing! group-data-[open]:hover:[scale:1.05] group-data-[open]:active:[scale:0.97] data-[pop]:[animation:folder-float-pop_320ms_var(--ff-ease-out)]"
               tabIndex={open ? 0 : -1}
               aria-hidden={!open}
-              data-pop={popped === i ? '' : undefined}
+              data-pop={popped === i && !reduced ? '' : undefined}
               style={{
                 '--i': i,
                 '--ff-item': item.pillColor,
                 '--ff-item-ink': item.pillTextColor,
                 '--x': `${p.x.toFixed(1)}px`,
                 '--y': `${p.y.toFixed(1)}px`,
-                '--r': `${p.r.toFixed(2)}deg`
+                '--r': `${p.r.toFixed(2)}deg`,
+                transition: reduced ? 'opacity 160ms ease' : undefined,
               }}
               onPointerDown={e => down(e, i)}
               onPointerMove={e => move(e, i)}
@@ -437,7 +431,10 @@ export default function FolderFloat({
                 if (!world.current.live || e.detail === 0) pick(item, i);
               }}
             >
-              <span className="block [animation:folder-float-drift_3.2s_ease-in-out_infinite] [animation-delay:calc(var(--i)*-0.7s)] [animation-play-state:paused] group-data-[open]:[animation-play-state:running] group-data-[live]:[animation:none] motion-reduce:[animation:none]">
+              <span
+                className="block [animation:folder-float-drift_3.2s_ease-in-out_infinite] [animation-delay:calc(var(--i)*-0.7s)] [animation-play-state:paused] group-data-[open]:[animation-play-state:running] group-data-[live]:[animation:none]"
+                style={{ animation: reduced ? 'none' : undefined }}
+              >
                 <span style={{ color: item.pillTextColor }}>{item.label}</span>
               </span>
             </button>
@@ -450,12 +447,22 @@ export default function FolderFloat({
           aria-hidden="true"
         />
         <span
-          className="absolute top-[10%] right-[8%] left-[8%] z-[1] h-1/2 rounded-md opacity-0 [background:var(--ff-paper)] [transform:translateY(10px)] [transition:transform_var(--ff-close)_var(--ff-ease-out),opacity_var(--ff-close)_ease] group-data-[open]:opacity-100 group-data-[open]:[transform:translateY(0)] group-data-[open]:[transition:transform_var(--ff-open)_var(--ff-ease-out),opacity_200ms_ease] motion-reduce:[transform:none]! motion-reduce:[transition:opacity_200ms_ease]"
+          className="absolute top-[10%] right-[8%] left-[8%] z-[1] h-1/2 rounded-md opacity-0 [background:var(--ff-paper)] [transform:translateY(10px)] [transition:transform_var(--ff-close)_var(--ff-ease-out),opacity_var(--ff-close)_ease] group-data-[open]:opacity-100 group-data-[open]:[transform:translateY(0)] group-data-[open]:[transition:transform_var(--ff-open)_var(--ff-ease-out),opacity_200ms_ease]"
           aria-hidden="true"
+          style={{
+            transform: reduced ? 'none' : undefined,
+            transition: reduced ? 'opacity 160ms ease' : undefined,
+          }}
         />
         <span
-          className="absolute right-0 bottom-0 left-0 z-[2] box-border flex h-[76%] flex-col justify-end gap-[5px] px-4 py-3.5 [border-radius:var(--ff-r)] [background:linear-gradient(180deg,color-mix(in_srgb,var(--ff-front)_92%,#fff),var(--ff-front)_60%)] [color:var(--ff-label)] shadow-[0_-10px_24px_rgba(0,0,0,0.28)] [transform:perspective(600px)_rotateX(calc(-1*var(--ff-rest)))] [transform-origin:50%_100%] [transition:transform_var(--ff-open)_var(--ff-ease-out)] group-data-[open]:[transform:perspective(600px)_rotateX(calc(-1*var(--ff-angle)))] motion-reduce:group-data-[open]:[transform:perspective(600px)_rotateX(calc(-1*var(--ff-rest)))] motion-reduce:[transition:opacity_200ms_ease]"
+          className="absolute right-0 bottom-0 left-0 z-[2] box-border flex h-[76%] flex-col justify-end gap-[5px] px-4 py-3.5 [border-radius:var(--ff-r)] [background:linear-gradient(180deg,color-mix(in_srgb,var(--ff-front)_92%,#fff),var(--ff-front)_60%)] [color:var(--ff-label)] shadow-[0_-10px_24px_rgba(0,0,0,0.28)] [transform:perspective(600px)_rotateX(calc(-1*var(--ff-rest)))] [transform-origin:50%_100%] [transition:transform_var(--ff-open)_var(--ff-ease-out)] group-data-[open]:[transform:perspective(600px)_rotateX(calc(-1*var(--ff-angle)))]"
           aria-hidden="true"
+          style={{
+            transform: reduced
+              ? 'perspective(600px) rotateX(calc(-1 * var(--ff-rest)))'
+              : undefined,
+            transition: reduced ? 'opacity 160ms ease' : undefined,
+          }}
         >
           <span className="text-[13px] font-medium">{label}</span>
           <span className="text-[11px] opacity-55">{sub}</span>

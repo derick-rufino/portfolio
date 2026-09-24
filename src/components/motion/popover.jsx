@@ -1,7 +1,7 @@
 "use client";;
 // beui.dev/components/motion/popover
 
-import { animate, useMotionValue, useMotionValueEvent, useReducedMotion } from "motion/react";
+import { animate, useMotionValue, useMotionValueEvent } from "motion/react";
 import {
   cloneElement,
   createContext,
@@ -21,6 +21,7 @@ import { useDismiss } from "@/lib/hooks/use-dismiss";
 import { useHoverGesture } from "@/lib/hooks/use-hover-gesture";
 import { useTapGesture } from "@/lib/hooks/use-tap-gesture";
 import { cn } from "@/lib/utils";
+import { useVisualEffects } from "@/context/VisualEffectsContext";
 
 // This morph needs less bounce than layout motion: too much overshoot makes
 // the liquid neck balloon past the final panel edges.
@@ -184,7 +185,8 @@ export function Popover({
   gooStrength = 8,
   className
 }) {
-  const reduce = useReducedMotion() ?? false;
+  const { ready, reduced: reduceEffects } = useVisualEffects();
+  const reduce = !ready || reduceEffects;
   const gooId = useId().replace(/:/g, "");
   const contentId = useId();
   const rootRef = useRef(null);
@@ -458,11 +460,12 @@ export function PopoverContent({
   // Morph the same clip on the goo body and the content, so the whole popover
   // oozes as one and the text reveals with it.
   const render = useCallback((g, p) => {
+    if (reduce) return;
     if (!g || g.layerW === 0) return;
     const clip = clipForProgress(g, p, supportsShapeRef.current);
     if (blobRef.current) blobRef.current.style.clipPath = clip;
     if (clipRef.current) clipRef.current.style.clipPath = clip;
-  }, []);
+  }, [reduce]);
 
   useLayoutEffect(() => {
     supportsShapeRef.current =
@@ -527,6 +530,7 @@ export function PopoverContent({
           top: geo.top,
           width: geo.layerW,
           height: geo.layerH,
+          display: reduce ? "none" : undefined,
           filter: reduce ? undefined : `url(#${gooId})`,
           clipPath: triggerCutout(geo),
         }}
@@ -566,7 +570,9 @@ export function PopoverContent({
           inert={!open}
           className="absolute inset-0"
           style={{
-            clipPath: clipForProgress(geo, progress.get(), false),
+            clipPath: reduce ? "none" : clipForProgress(geo, progress.get(), false),
+            opacity: reduce ? (open ? 1 : 0) : undefined,
+            transition: reduce ? "opacity 140ms ease" : undefined,
             pointerEvents: open ? "auto" : "none",
           }}
         >

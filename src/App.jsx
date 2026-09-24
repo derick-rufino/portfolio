@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { lazy, Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { ChevronDown } from "lucide-react";
 import "./index.css";
 import "./global.css";
@@ -16,16 +16,17 @@ import {
   PopoverTrigger,
 } from "@/components/motion/popover";
 
-import GradientWaves from "@/components/GradientWaves";
+import { useVisualEffects } from "@/context/VisualEffectsContext";
 import StackSection from "@/components/StackSection";
 import ProjectCard from "@/components/ProjectCard";
 import DeferredProjectsFolder from "@/components/DeferredProjectsFolder";
 import ContactSection from "@/components/ContactSection";
-import ProgressiveBlur from "@/components/ProgressiveBlur";
 import SectionHeading from "@/components/SectionHeading";
 import CvButton from "@/components/CvButton";
 
 import { projects } from "@/data/projects";
+
+const GradientWaves = lazy(() => import("@/components/GradientWaves"));
 
 const SECTIONS = [
   { id: "hero", label: "Início" },
@@ -68,6 +69,7 @@ function MenuIcon({ open }) {
 }
 
 function App() {
+  const { ready: effectsReady, reduced: reduceEffects } = useVisualEffects();
   const [active, setActive] = useState("hero");
   const [nameVisible, setNameVisible] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -158,20 +160,61 @@ function App() {
 
   return (
     // overflow-x-clip (não hidden): "hidden" cria um scroll container e quebra o position: sticky
-    <div className="dark main min-h-dvh w-full overflow-x-clip bg-background">
+    <div className="dark main relative isolate min-h-dvh w-full overflow-x-clip bg-background">
       <Analytics />
-      <header ref={headerRef} className="sticky top-0 z-50 w-full">
-        {/* Progressive blur + leve escurecimento, se estendem um pouco abaixo do header */}
-        <ProgressiveBlur className="-z-10 h-[calc(100%+2.5rem)]" />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[calc(100%+2.5rem)] bg-linear-to-b from-background/70 to-transparent"
-        />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[calc(100dvh+180px)] overflow-hidden opacity-35 mask-[linear-gradient(to_bottom,black_55%,black_72%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_55%,black_72%,transparent_100%)]"
+      >
+        {!effectsReady || reduceEffects ? (
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage:
+                "radial-gradient(ellipse at 50% 22%, rgb(255 255 255 / 0.12), transparent 62%), linear-gradient(180deg, rgb(255 255 255 / 0.035), transparent 60%)",
+            }}
+          />
+        ) : (
+          <Suspense fallback={null}>
+            <GradientWaves
+              horizonColor="bg-background"
+              waveColor="bg-chart-2"
+              crestColor="bg-chart-3"
+              speed={0.5}
+              amplitude={2}
+              waveScale={1.2}
+              waveRatio={0.85}
+              swell={28}
+              turbulence={10}
+              tilt={1.5}
+              zoom={1.05}
+              height={4.8}
+              fogDepth={18}
+              detail="medium"
+              brightness={0.85}
+              opacity={0.9}
+              mouseInteraction
+              parallaxStrength={10}
+              grain
+              grainIntensity={0.025}
+              className="absolute inset-0"
+            />
+          </Suspense>
+        )}
+      </div>
+
+      <header ref={headerRef} className="sticky top-0 z-50 w-full bg-transparent">
 
         <div
           className={`${CONTAINER} flex h-fit items-center justify-between py-2`}
         >
-          <div className="relative grid h-6 overflow-hidden text-foreground">
+          <div
+            className={`relative grid overflow-hidden text-foreground ${
+              reduceEffects && !nameVisible
+                ? "-ml-3 h-9 items-center rounded-full bg-background px-3"
+                : "h-6"
+            }`}
+          >
             <span
               className={`col-start-1 row-start-1 whitespace-nowrap transition-all duration-300 ease-out ${
                 nameVisible
@@ -273,41 +316,12 @@ function App() {
         </div>
       </header>
 
-      <main>
+      <main className="relative z-0">
         {/* Hero: fundo em largura total, conteúdo dentro do container */}
         <section
           id="hero"
           className="relative isolate flex min-h-[85dvh] flex-col scroll-mt-12 md:min-h-[95dvh]"
         >
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[calc(100%+180px)] overflow-hidden opacity-35 mask-[linear-gradient(to_bottom,black_55%,black_72%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_55%,black_72%,transparent_100%)]"
-          >
-            <GradientWaves
-              horizonColor="bg-background"
-              waveColor="bg-chart-2"
-              crestColor="bg-chart-3"
-              speed={0.5}
-              amplitude={2}
-              waveScale={1.2}
-              waveRatio={0.85}
-              swell={28}
-              turbulence={10}
-              tilt={1.5}
-              zoom={1.05}
-              height={4.8}
-              fogDepth={18}
-              detail="medium"
-              brightness={0.85}
-              opacity={0.9}
-              mouseInteraction
-              parallaxStrength={10}
-              grain
-              grainIntensity={0.025}
-              className="absolute inset-0"
-            />
-          </div>
-
           <div
             className={`${CONTAINER} flex min-h-[calc(85dvh-3rem)] flex-col-reverse items-center justify-center gap-8 py-4 text-center sm:gap-10 sm:py-6 md:min-h-[calc(95dvh-3rem)] md:flex-row md:items-start md:justify-between md:gap-6 md:py-0 md:text-left`}
           >

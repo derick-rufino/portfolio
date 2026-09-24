@@ -50,6 +50,8 @@ export function Tabs({
 }) {
   const [internal, setInternal] = useState(defaultValue ?? "");
   const layoutId = useId();
+  // Tabs remain animated when the site's visual effects are reduced; the
+  // operating system's reduced-motion preference still applies.
   const reduce = useReducedMotion();
   const controlled = value !== undefined;
   const current = controlled ? value : internal;
