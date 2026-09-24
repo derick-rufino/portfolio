@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="pt-BR" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#14141e" />
+    <meta name="robots" content="noindex, follow" />
+    <title>404 — Página não encontrada | Derick Rufino</title>
+    <style>
+      :root { color-scheme: dark; font-family: Figtree, Inter, system-ui, sans-serif; background: #09090b; color: #f4f4f5; }
+      * { box-sizing: border-box; }
+      body { min-height: 100vh; margin: 0; display: grid; place-items: center; padding: 24px; }
+      main { width: min(100%, 440px); display: grid; gap: 24px; }
+      .terminal { overflow: hidden; border: 1px solid #27272a; border-radius: 14px; background: #09090b; box-shadow: 0 20px 60px #0005; }
+      .bar { display: flex; align-items: center; gap: 7px; padding: 13px 16px; border-bottom: 1px solid #ffffff1a; color: #a1a1aa; font: 12px ui-monospace, monospace; }
+      .dot { width: 10px; height: 10px; border-radius: 50%; }
+      .bar span:last-child { margin-left: 7px; }
+      pre { margin: 0; padding: 18px; overflow-wrap: anywhere; white-space: pre-wrap; color: #d4d4d8; font: 13px/1.8 ui-monospace, SFMono-Regular, monospace; }
+      .error, .status { color: #ff6b6b; }
+      h1 { margin: 0; font-size: 20px; font-weight: 600; }
+      p { margin: 7px 0 0; color: #a1a1aa; font-size: 14px; line-height: 1.6; }
+      a { justify-self: start; margin-top: 2px; border: 1px solid #3f3f46; border-radius: 999px; padding: 10px 16px; color: #f4f4f5; text-decoration: none; font-size: 14px; transition: background .2s ease; }
+      a:hover, a:focus-visible { background: #27272a; }
+      a:focus-visible { outline: 2px solid #60a5fa; outline-offset: 3px; }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="terminal" aria-label="Erro 404">
+        <div class="bar" aria-hidden="true">
+          <i class="dot" style="background:#ff5f57"></i>
+          <i class="dot" style="background:#febc2e"></i>
+          <i class="dot" style="background:#28c840"></i>
+          <span>~/DevPortfolio</span>
+        </div>
+        <pre><span id="command">$ cd /</span>
+<span class="error" id="message">cd: no such file or directory: /</span>
+$ status <strong class="status">404</strong></pre>
+      </section>
+      <div>
+        <h1>Página não encontrada</h1>
+        <p>Esse endereço não existe ou não está mais disponível.</p>
+      </div>
+      <a href="/">Voltar ao início</a>
+    </main>
+    <script>
+      const attemptedPath = window.location.pathname + window.location.search;
+      document.getElementById("command").textContent = `$ cd ${attemptedPath}`;
+      document.getElementById("message").textContent = `cd: no such file or directory: ${attemptedPath}`;
+    </script>
+  </body>
+</html>

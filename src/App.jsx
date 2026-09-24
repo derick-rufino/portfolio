@@ -352,7 +352,7 @@ function App() {
             variant="ghost"
             size="sm"
             onClick={goToStack}
-            className="mx-auto mb-3 mt-auto gap-1 rounded-full px-3 text-xs text-muted-foreground hover:text-foreground md:mb-4 opacity-80"
+            className="mx-auto mb-3 mt-auto gap-1 rounded-full px-3 text-xs text-muted-foreground opacity-80 hover:text-foreground md:hidden"
             aria-label="Role para ver mais sobre minhas tecnologias"
           >
             Role para ver mais
