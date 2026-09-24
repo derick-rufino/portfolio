@@ -2,6 +2,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import "./index.css";
 import "./global.css";
 
+import { Analytics } from "@vercel/analytics/react";
+
 import ProfilePic from "./assets/profile-picture.jpg";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs";
@@ -150,9 +152,10 @@ function App() {
   return (
     // overflow-x-clip (não hidden): "hidden" cria um scroll container e quebra o position: sticky
     <div className="dark main min-h-dvh w-full overflow-x-clip bg-background">
+      <Analytics />
       <header ref={headerRef} className="sticky top-0 z-50 w-full">
         {/* Progressive blur + leve escurecimento, se estendem um pouco abaixo do header */}
-        <ProgressiveBlur className="-z-10 h-[calc(100%+2.5rem)]" />
+        <ProgressiveBlur className="-z-10 h-[calc(100%+2.5rem)] bg-background" />
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[calc(100%+2.5rem)] bg-linear-to-b from-background/70 to-transparent"
