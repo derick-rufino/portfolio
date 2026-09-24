@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Matter from 'matter-js';
+import { GITHUB_URL } from '@/data/contact';
 const { Bodies, Body, Composite, Engine } = Matter;
 
 const DEFAULT_ITEMS = ['Try a warmer palette', 'Tighten the spacing', 'Logo feels small', 'Love the new hero'];
+const DEFAULT_PILL_COLORS = ['#60a5fa', '#fbbf24', '#f472b6', '#4ade80'];
 const PAD = 28;
 const CHAR = 6.8;
 const GAP = 12;
@@ -62,7 +64,8 @@ export default function FolderFloat({
   folderColor = '#3f3f46',
   frontColor = '#52525b',
   paperColor = '#f5f5f5',
-  itemColor = '#f5f5f5',
+  itemColor,
+  pillColors,
   itemTextColor = '#18181b',
   labelColor = '#f5f5f5',
   width = 200,
@@ -78,7 +81,14 @@ export default function FolderFloat({
   bounce = 0.3,
   className = ''
 }) {
-  const [open, setOpen] = useState(defaultOpen);
+  const [hasHover, setHasHover] = useState(() =>
+    typeof window === 'undefined' || window.matchMedia('(hover: hover) and (pointer: fine)').matches
+  );
+  const [open, setOpen] = useState(() =>
+    typeof window !== 'undefined' && !window.matchMedia('(hover: hover) and (pointer: fine)').matches
+      ? true
+      : defaultOpen
+  );
   const [popped, setPopped] = useState(-1);
   const [live, setLive] = useState(false);
   const [sizes, setSizes] = useState([]);
@@ -99,7 +109,18 @@ export default function FolderFloat({
   latest.current = { onSelect, onOpenChange, drift, reduce: false };
   const popTimer = useRef(undefined);
   const liveTimer = useRef(undefined);
-  const list = items.map(item => (typeof item === 'string' ? { label: item, value: item } : item));
+  const list = items.map((item, i) => {
+    const normalized = typeof item === 'string' ? { label: item, value: item } : item;
+    const colors = pillColors?.length ? pillColors : DEFAULT_PILL_COLORS;
+    return {
+      ...normalized,
+      label: normalized.label ?? normalized.title ?? `Item ${i + 1}`,
+      value: normalized.value ?? normalized.url ?? GITHUB_URL,
+      href: normalized.href ?? normalized.url ?? GITHUB_URL,
+      pillColor: normalized.color ?? itemColor ?? colors[i % colors.length],
+      pillTextColor: normalized.textColor ?? itemTextColor,
+    };
+  });
   const n = list.length;
   const sub = sublabel || `${n} ${n === 1 ? 'note' : 'notes'}`;
   const pos = layout(list, spread, lift, tilt, sizes);
@@ -219,6 +240,7 @@ export default function FolderFloat({
 
   const set = useCallback(
     next => {
+      if (!hasHover) next = true;
       if (!next) stopPhysics();
       setOpen(prev => {
         if (prev === next) return prev;
@@ -226,19 +248,33 @@ export default function FolderFloat({
         return next;
       });
     },
-    [stopPhysics]
+    [hasHover, stopPhysics]
   );
 
   useEffect(() => {
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
+    const sync = () => {
+      setHasHover(mq.matches);
+      if (!mq.matches) {
+        setOpen(true);
+        stopPhysics();
+      }
+    };
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, [stopPhysics]);
+
+  useEffect(() => {
     clearTimeout(liveTimer.current);
-    if (!open || !physics || latest.current.reduce) {
+    if (!open || !physics || !hasHover || latest.current.reduce) {
       if (!open) stopPhysics();
       else if (!physics) stopPhysics();
       return undefined;
     }
     liveTimer.current = setTimeout(startPhysics, openDuration + (n - 1) * stagger + 80);
     return () => clearTimeout(liveTimer.current);
-  }, [open, physics, openDuration, stagger, n, startPhysics, stopPhysics]);
+  }, [open, physics, hasHover, openDuration, stagger, n, startPhysics, stopPhysics]);
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -260,6 +296,7 @@ export default function FolderFloat({
 
   const pick = (item, i) => {
     latest.current.onSelect?.(item.value, i);
+    if (!latest.current.onSelect) window.open(item.href, '_blank', 'noopener,noreferrer');
     clearTimeout(popTimer.current);
     setPopped(i);
     popTimer.current = setTimeout(() => setPopped(-1), 320);
@@ -324,7 +361,7 @@ export default function FolderFloat({
   return (
     <div
       className={`group relative inline-block text-[13px] leading-none font-medium [width:var(--ff-w)] [padding-top:var(--ff-tab)] [font-family:inherit]${className ? ` ${className}` : ''}`}
-      data-open={open ? '' : undefined}
+      data-open={open || !hasHover ? '' : undefined}
       data-live={live ? '' : undefined}
       data-physics={physics ? '' : undefined}
       data-trigger={trigger}
@@ -349,7 +386,7 @@ export default function FolderFloat({
         '--ff-back': folderColor,
         '--ff-front': frontColor,
         '--ff-paper': paperColor,
-        '--ff-item': itemColor,
+        '--ff-item': itemColor ?? '#f5f5f5',
         '--ff-item-ink': itemTextColor,
         '--ff-label': labelColor,
         '--ff-spread': `${spread}px`,
@@ -385,6 +422,8 @@ export default function FolderFloat({
               data-pop={popped === i ? '' : undefined}
               style={{
                 '--i': i,
+                '--ff-item': item.pillColor,
+                '--ff-item-ink': item.pillTextColor,
                 '--x': `${p.x.toFixed(1)}px`,
                 '--y': `${p.y.toFixed(1)}px`,
                 '--r': `${p.r.toFixed(2)}deg`
@@ -398,7 +437,7 @@ export default function FolderFloat({
               }}
             >
               <span className="block [animation:folder-float-drift_3.2s_ease-in-out_infinite] [animation-delay:calc(var(--i)*-0.7s)] [animation-play-state:paused] group-data-[open]:[animation-play-state:running] group-data-[physics]:[animation:none] group-data-[live]:[animation:none] motion-reduce:[animation:none]">
-                {item.label}
+                <span style={{ color: item.pillTextColor }}>{item.label}</span>
               </span>
             </button>
           );
@@ -423,7 +462,7 @@ export default function FolderFloat({
         <button
           type="button"
           className="absolute right-0 bottom-0 left-0 z-[3] m-0 h-[76%] cursor-pointer border-0 bg-transparent p-0 outline-none [border-radius:var(--ff-r)] [-webkit-tap-highlight-color:transparent]"
-          aria-expanded={open}
+          aria-expanded={open || !hasHover}
           aria-label={`${label}, ${sub}`}
           onClick={() => set(!open)}
         />

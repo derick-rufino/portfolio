@@ -4,8 +4,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Copy, Check, Mail } from "lucide-react";
 
+import { ActionSwapRollButton } from "@/components/motion/action-swap-roll";
 import { Tooltip } from "@/components/motion/tooltip";
-import { AnimatedBadge } from "@/components/motion/animated-badge";
 import SectionHeading from "@/components/SectionHeading";
 import CvButton from "@/components/CvButton";
 
@@ -68,29 +68,32 @@ export default function ContactSection() {
             {EMAIL}
           </a>
 
-          <Tooltip content="Copiar e-mail">
-            <button
-              type="button"
+          <Tooltip content={copied ? "E-mail copiado" : "Copiar e-mail"}>
+            <ActionSwapRollButton
+              items={[
+                {
+                  id: "copy",
+                  label: "Copiar e-mail",
+                  ariaLabel: "Copiar e-mail",
+                  icon: <Copy className="size-4" />,
+                },
+                {
+                  id: "copied",
+                  label: "E-mail copiado",
+                  ariaLabel: "E-mail copiado",
+                  icon: <Check className="size-4" />,
+                },
+              ]}
+              value={copied ? "copied" : "copy"}
+              cycle={false}
+              iconOnly
               onClick={copyEmail}
-              aria-label="Copiar e-mail"
-              className="grid size-11 place-items-center rounded-full bg-card/70 text-muted-foreground transition-colors outline-none hover:bg-card hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
-            >
-              {copied ? (
-                <Check className="size-4" aria-hidden="true" />
-              ) : (
-                <Copy className="size-4" aria-hidden="true" />
-              )}
-            </button>
+              draggable={false}
+              variant="ghost"
+              size="icon"
+              className="h-11 w-11 rounded-full bg-card/70 text-muted-foreground hover:bg-card hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+            />
           </Tooltip>
-
-          {/* Área reservada pro aviso, com leitor de tela */}
-          <span aria-live="polite" className="min-h-6">
-            {copied && (
-              <AnimatedBadge status="success" size="sm">
-                E-mail copiado
-              </AnimatedBadge>
-            )}
-          </span>
         </div>
 
         {/* Redes */}

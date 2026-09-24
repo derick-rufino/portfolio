@@ -18,7 +18,7 @@ import {
 import GradientWaves from "@/components/GradientWaves";
 import StackSection from "@/components/StackSection";
 import ProjectCard from "@/components/ProjectCard";
-import ProjectsFolder from "@/components/ProjectsFolder";
+import DeferredProjectsFolder from "@/components/DeferredProjectsFolder";
 import ContactSection from "@/components/ContactSection";
 import ProgressiveBlur from "@/components/ProgressiveBlur";
 import SectionHeading from "@/components/SectionHeading";
@@ -363,7 +363,7 @@ function App() {
                 <ProjectCard key={project.title} project={project} />
               ))}
 
-              <ProjectsFolder />
+              <DeferredProjectsFolder />
             </div>
           </section>
         </div>

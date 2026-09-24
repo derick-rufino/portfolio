@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Folder = ({
   color = {
@@ -18,6 +18,21 @@ const Folder = ({
   }
 
   const [open, setOpen] = useState(false);
+  const [canHover, setCanHover] = useState(() =>
+    typeof window === "undefined" || window.matchMedia("(hover: hover) and (pointer: fine)").matches,
+  );
+  const isOpen = open || !canHover;
+
+  useEffect(() => {
+    const media = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const update = () => {
+      setCanHover(media.matches);
+      if (!media.matches) setOpen(true);
+    };
+    update();
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
 
   const [paperOffsets, setPaperOffsets] = useState(
     Array.from({ length: maxItems }, () => ({
@@ -49,9 +64,10 @@ const Folder = ({
   const paper3 = "bg-white";
 
   const handleClick = () => {
+    if (!canHover) return;
     setOpen((prev) => !prev);
 
-    if (open) {
+    if (isOpen && canHover) {
       setPaperOffsets(
         Array.from({ length: maxItems }, () => ({
           x: 0,
@@ -62,7 +78,7 @@ const Folder = ({
   };
 
   const handlePaperMouseMove = (e, index) => {
-    if (!open) return;
+    if (!isOpen) return;
 
     const rect = e.currentTarget.getBoundingClientRect();
 
@@ -121,11 +137,11 @@ const Folder = ({
     <div style={scaleStyle} className={className}>
       <div
         className={`group relative cursor-pointer transition-all duration-200 ease-in ${
-          !open ? "hover:-translate-y-2" : ""
+          !isOpen ? "hover:-translate-y-2" : ""
         }`}
-        style={{
-          transform: open ? "translateY(-8px)" : undefined,
-        }}
+        style={{ transform: isOpen ? "translateY(-8px)" : undefined }}
+        onMouseEnter={() => canHover && setOpen(true)}
+        onMouseLeave={() => canHover && setOpen(false)}
         onClick={handleClick}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -135,8 +151,8 @@ const Folder = ({
         }}
         tabIndex={0}
         role="button"
-        aria-expanded={open}
-        aria-label={open ? "Close folder" : "Open folder"}
+        aria-expanded={isOpen}
+        aria-label={isOpen ? "Close folder" : "Open folder"}
       >
         {/* CORPO / PARTE DE TRÁS */}
         <div
@@ -156,14 +172,14 @@ const Folder = ({
             }
 
             if (i === 1) {
-              sizeClasses = open ? "w-[80%] h-[80%]" : "w-[80%] h-[70%]";
+              sizeClasses = isOpen ? "w-[80%] h-[80%]" : "w-[80%] h-[70%]";
             }
 
             if (i === 2) {
-              sizeClasses = open ? "w-[90%] h-[80%]" : "w-[90%] h-[60%]";
+              sizeClasses = isOpen ? "w-[90%] h-[80%]" : "w-[90%] h-[60%]";
             }
 
-            const transformStyle = open
+            const transformStyle = isOpen
               ? `${getOpenTransform(i)} translate(${paperOffsets[i].x}px, ${paperOffsets[i].y}px)`
               : undefined;
 
@@ -173,14 +189,14 @@ const Folder = ({
                 onMouseMove={(e) => handlePaperMouseMove(e, i)}
                 onMouseLeave={(e) => handlePaperMouseLeave(e, i)}
                 className={`absolute bottom-[10%] left-1/2 z-20 transition-all duration-300 ease-in-out ${
-                  !open
+                  !isOpen
                     ? "transform -translate-x-1/2 translate-y-[10%] group-hover:translate-y-0"
                     : "hover:scale-110"
                 } ${sizeClasses} ${
                   i === 0 ? paper1 : i === 1 ? paper2 : paper3
                 }`}
                 style={{
-                  transform: open ? transformStyle : undefined,
+                  transform: isOpen ? transformStyle : undefined,
                   borderRadius: "10px",
                 }}
               >
@@ -192,10 +208,10 @@ const Folder = ({
           {/* FRENTE ESQUERDA */}
           <div
             className={`absolute z-30 h-full w-full origin-bottom rounded-[5px_10px_10px_10px] transition-all duration-300 ease-in-out ${
-              !open ? "group-hover:transform-[skew(15deg)_scaleY(0.6)]" : ""
+              !isOpen ? "group-hover:transform-[skew(15deg)_scaleY(0.6)]" : ""
             } ${frontColor}`}
             style={{
-              ...(open && {
+              ...(isOpen && {
                 transform: "skew(15deg) scaleY(0.6)",
               }),
             }}
@@ -204,10 +220,10 @@ const Folder = ({
           {/* FRENTE DIREITA */}
           <div
             className={`absolute z-30 h-full w-full origin-bottom rounded-[5px_10px_10px_10px] transition-all duration-300 ease-in-out ${
-              !open ? "group-hover:transform-[skew(-15deg)_scaleY(0.6)]" : ""
+              !isOpen ? "group-hover:transform-[skew(-15deg)_scaleY(0.6)]" : ""
             } ${frontColor}`}
             style={{
-              ...(open && {
+              ...(isOpen && {
                 transform: "skew(-15deg) scaleY(0.6)",
               }),
             }}
