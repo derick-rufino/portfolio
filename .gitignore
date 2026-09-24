@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local Codex work notes
+/.codex/memory/NEXT_SESSION.md

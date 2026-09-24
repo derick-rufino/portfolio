@@ -21,6 +21,7 @@ import StackSection from "@/components/StackSection";
 import ProjectCard from "@/components/ProjectCard";
 import DeferredProjectsFolder from "@/components/DeferredProjectsFolder";
 import ContactSection from "@/components/ContactSection";
+import ProgressiveBlur from "@/components/ProgressiveBlur";
 import SectionHeading from "@/components/SectionHeading";
 import CvButton from "@/components/CvButton";
 
@@ -204,6 +205,9 @@ function App() {
       </div>
 
       <header ref={headerRef} className="sticky top-0 z-50 w-full bg-transparent">
+        {!reduceEffects && (
+          <ProgressiveBlur className="-z-10 h-[calc(100%+2.5rem)]" />
+        )}
 
         <div
           className={`${CONTAINER} flex h-fit items-center justify-between py-2`}
