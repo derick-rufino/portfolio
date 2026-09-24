@@ -1,13 +1,14 @@
 import { useRef, useEffect } from "react";
 import { gsap } from "gsap";
 
-// tamanhos disponíveis pra imagem/ícone dentro do card
+// tamanhos disponíveis pra imagem/ícone dentro do card — já responsivos
+// (menor no mobile, cresce a partir de sm)
 const IMAGE_SIZES = {
-  xs: "w-10 h-10",
-  sm: "w-16 h-16",
-  md: "w-24 h-24",
-  lg: "w-32 h-32",
-  xl: "w-40 h-40",
+  xs: "w-6 h-6 sm:w-10 sm:h-10",
+  sm: "w-9 h-9 sm:w-16 sm:h-16",
+  md: "w-14 h-14 sm:w-24 sm:h-24",
+  lg: "w-20 h-20 sm:w-32 sm:h-32",
+  xl: "w-24 h-24 sm:w-40 sm:h-40",
 };
 
 const ChromaGrid = ({
@@ -15,7 +16,6 @@ const ChromaGrid = ({
   className = "",
   radius = 300,
   columns = 3,
-  rows = 2,
   damping = 0.45,
   fadeOut = 0.6,
   ease = "power3.out",
@@ -141,18 +141,16 @@ const ChromaGrid = ({
       ref={rootRef}
       onPointerMove={handleMove}
       onPointerLeave={handleLeave}
-      className={`bg-background relative w-full h-full grid justify-center gap-3 ${className}`}
+      className={`bg-transparent relative w-full grid gap-2 sm:gap-3 md:gap-4 px-2 sm:px-4 ${className}`}
       style={{
         "--r": `${radius}px`,
         "--cols": columns,
-        "--rows": rows,
         "--x": "50%",
         "--y": "50%",
-        gridTemplateColumns: `repeat(${columns}, 320px)`,
+        gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
         gridAutoRows: "auto",
         maxWidth: "1200px",
         margin: "0 auto",
-        padding: "1rem",
         boxSizing: "border-box",
       }}
     >
@@ -166,14 +164,14 @@ const ChromaGrid = ({
             key={i}
             onMouseMove={handleCardMove}
             onClick={() => handleCardClick(c.url)}
-            className="group relative flex flex-col w-75 rounded-[20px] overflow-hidden border-2 border-transparent transition-colors duration-300 cursor-pointer"
+            className="group relative flex flex-col w-full aspect-square sm:aspect-auto rounded-2xl sm:rounded-[20px] overflow-hidden border-2 border-transparent transition-colors duration-300 cursor-pointer"
             style={{
               "--card-border": c.borderColor || "transparent",
               background: c.gradient,
               "--spotlight-color": c.spotlightColor,
             }}
           >
-            {/* spotlight agora atrás do conteúdo (z-0 < z-10 do image/footer) */}
+            {/* spotlight — só reage a hover, então no touch fica quieto e não atrapalha */}
             <div
               className="absolute inset-0 pointer-events-none transition-opacity duration-500 z-0 opacity-0 group-hover:opacity-100"
               style={{
@@ -181,24 +179,31 @@ const ChromaGrid = ({
                   "radial-gradient(circle at var(--mouse-x) var(--mouse-y), var(--spotlight-color), transparent 70%)",
               }}
             />
-            <div className="relative z-10 flex-1 p-2.5 box-border flex items-center justify-center">
+            <div className="relative z-10 flex-1 p-1.5 sm:p-2.5 box-border flex items-center justify-center">
               <img
                 src={c.image}
                 alt={c.title}
                 loading="lazy"
-                className={`${imgSizeClass} object-cover rounded-[10px]`}
+                className={`${imgSizeClass} object-cover`}
               />
             </div>
-            <footer className="relative z-10 p-3 text-white font-sans grid grid-cols-[1fr_auto] gap-x-3 gap-y-1">
-              <h3 className="m-0 text-[1.05rem] font-semibold">{c.title}</h3>
+            {/* mobile: só o nome, centralizado, sem categoria/handle — grid vira sm+ */}
+            <footer className="relative z-10 p-1.5 sm:p-3 text-white font-sans grid grid-cols-[1fr_auto] gap-x-2 sm:gap-x-3 gap-y-0.5 sm:gap-y-1">
+              <h3 className="m-0 text-[0.7rem] sm:text-[1.05rem] font-semibold text-center sm:text-left truncate col-span-2 sm:col-span-1">
+                {c.title}
+              </h3>
               {c.handle && (
-                <span className="text-[0.95rem] opacity-80 text-right">
+                <span className="hidden sm:inline text-[0.95rem] opacity-80 text-right">
                   {c.handle}
                 </span>
               )}
-              <p className="m-0 text-[0.85rem] opacity-85">{c.subtitle}</p>
+              {c.subtitle && (
+                <p className="hidden sm:block m-0 text-[0.85rem] opacity-85">
+                  {c.subtitle}
+                </p>
+              )}
               {c.location && (
-                <span className="text-[0.85rem] opacity-85 text-right">
+                <span className="hidden sm:inline text-[0.85rem] opacity-85 text-right">
                   {c.location}
                 </span>
               )}

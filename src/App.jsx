@@ -7,7 +7,20 @@ import ProfilePic from "./assets/profile-picture.jpg";
 import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs";
 import { ChromaticTextReveal } from "@/components/motion/chromatic-text-reveal";
 import { Button } from "@/components/ui/button";
-import ChromaGrid from "@/components/ChromaGrid";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/motion/popover";
+
+import GradientWaves from "@/components/GradientWaves";
+import StackSection from "@/components/StackSection";
+import ProjectCard from "@/components/ProjectCard";
+import ProjectsFolder from "@/components/ProjectsFolder";
+import ContactSection from "@/components/ContactSection";
+import ProgressiveBlur from "@/components/ProgressiveBlur";
+import SectionHeading from "@/components/SectionHeading";
+import { projects } from "@/data/projects";
 
 const SECTIONS = [
   { id: "hero", label: "Início" },
@@ -18,246 +31,340 @@ const SECTIONS = [
 const NAME = "Derick Rufino";
 const BRAND = "DevPortfolio";
 
-const stackItems = [
-  {
-    image:
-      "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg",
-    title: "React",
-    subtitle: "Biblioteca",
-    borderColor: "#61DAFB",
-    spotlightColor: "#8BE7FF",
-    gradient: "linear-gradient(145deg, #0a0a0a, #0f2a33)",
-    url: "https://react.dev",
-  },
-  {
-    image:
-      "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg",
-    title: "JavaScript",
-    subtitle: "Linguagem",
-    borderColor: "#f7df1e",
-    spotlightColor: "#FFF34A",
-    gradient: "linear-gradient(145deg, #0a0a0a, #33300a)",
-    url: "https://developer.mozilla.org/pt-BR/docs/Web/JavaScript",
-  },
-  {
-    image:
-      "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tailwindcss/tailwindcss-original.svg",
-    title: "Tailwind CSS",
-    subtitle: "Framework CSS",
-    borderColor: "#38bdf8",
-    spotlightColor: "#6DD5FF",
-    gradient: "linear-gradient(145deg, #0a0a0a, #0a2a33)",
-    url: "https://tailwindcss.com",
-  },
-  {
-    image:
-      "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg",
-    title: "Node.js",
-    subtitle: "Runtime",
-    borderColor: "#68a063",
-    spotlightColor: "#8BC77F",
-    gradient: "linear-gradient(145deg, #0a0a0a, #142a12)",
-    url: "https://nodejs.org",
-  },
-  {
-    image:
-      "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg",
-    title: "React Native",
-    subtitle: "Mobile",
-    borderColor: "#61DAFB",
-    spotlightColor: "#8BE7FF",
-    gradient: "linear-gradient(145deg, #0a0a0a, #0f2a33)",
-    url: "https://reactnative.dev",
-  },
-  {
-    image:
-      "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/mysql/mysql-original.svg",
-    title: "MySQL",
-    subtitle: "Banco de dados",
-    borderColor: "#4479A1",
-    spotlightColor: "#63B8E8",
-    gradient: "linear-gradient(145deg, #0a0a0a, #0a1c2a)",
-    url: "https://www.mysql.com",
-  },
-  {
-    image:
-      "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/microsoftsqlserver/microsoftsqlserver-plain.svg",
-    title: "SQL Server",
-    subtitle: "Banco de dados",
-    borderColor: "#CC2927",
-    spotlightColor: "#F04A47",
-    gradient: "linear-gradient(145deg, #0a0a0a, #2a0f0f)",
-    url: "https://www.microsoft.com/pt-br/sql-server",
-  },
-  {
-    image:
-      "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/figma/figma-original.svg",
-    title: "Figma",
-    subtitle: "Design",
-    borderColor: "#F24E1E",
-    spotlightColor: "#FF7043",
-    gradient: "linear-gradient(145deg, #0a0a0a, #2a170f)",
-    url: "https://figma.com",
-  },
-  {
-    image:
-      "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg",
-    title: "Git",
-    subtitle: "Versionamento",
-    borderColor: "#F05032",
-    spotlightColor: "#FF7358",
-    gradient: "linear-gradient(145deg, #0a0a0a, #2a130f)",
-    url: "https://git-scm.com",
-  },
-];
+// Largura máxima do conteúdo: alinha hero, stack e projetos na mesma coluna
+const CONTAINER = "mx-auto w-full max-w-6xl px-4 sm:px-6";
+
+function MenuIcon({ open }) {
+  return (
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      className="transition-transform duration-300"
+    >
+      {open ? (
+        <>
+          <line x1="6" y1="6" x2="18" y2="18" />
+          <line x1="18" y1="6" x2="6" y2="18" />
+        </>
+      ) : (
+        <>
+          <line x1="4" y1="7" x2="20" y2="7" />
+          <line x1="4" y1="12" x2="20" y2="12" />
+          <line x1="4" y1="17" x2="20" y2="17" />
+        </>
+      )}
+    </svg>
+  );
+}
 
 function App() {
   const [active, setActive] = useState("hero");
-  const [heroVisible, setHeroVisible] = useState(true);
+  const [nameVisible, setNameVisible] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   const isClickScroll = useRef(false);
+  const clickScrollTimeout = useRef(null);
   const headerRef = useRef(null);
+  const nameRef = useRef(null); // h1 do hero
 
   const handleValueChange = useCallback((value) => {
     isClickScroll.current = true;
     setActive(value);
+
     document.getElementById(value)?.scrollIntoView({ behavior: "smooth" });
-    window.clearTimeout(handleValueChange._t);
-    handleValueChange._t = window.setTimeout(() => {
+
+    window.clearTimeout(clickScrollTimeout.current);
+    clickScrollTimeout.current = window.setTimeout(() => {
       isClickScroll.current = false;
     }, 700);
   }, []);
 
-  // Scroll spy das tabs (igual antes)
+  const goToContact = useCallback(() => {
+    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
+  useEffect(() => {
+    return () => window.clearTimeout(clickScrollTimeout.current);
+  }, []);
+
+  // Scroll spy: a seção ativa é a que cruza uma faixa fina no meio da tela.
+  // Funciona igual pra seção curta (stack) e pra seção alta (projetos).
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (isClickScroll.current) return;
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible) setActive(visible.target.id);
+        const current = entries.find((entry) => entry.isIntersecting);
+        if (current) setActive(current.target.id);
       },
-      { threshold: 0.5 },
+      { rootMargin: "-45% 0px -50% 0px" },
     );
+
     SECTIONS.forEach(({ id }) => {
-      const el = document.getElementById(id);
-      if (el) observer.observe(el);
+      const element = document.getElementById(id);
+      if (element) observer.observe(element);
     });
+
     return () => observer.disconnect();
   }, []);
 
-  // Collapse do título: dispara exatamente quando o hero passa por baixo do header sticky,
-  // usando a altura real do header (medida via ref) como rootMargin — não um valor chutado.
+  // Troca BRAND por NAME assim que o header passa do h1 do hero.
+  // "passed" só é true quando o h1 saiu por CIMA (não conta se estiver abaixo da dobra).
   useEffect(() => {
-    const hero = document.getElementById("hero");
-    if (!hero || !headerRef.current) return;
+    const name = nameRef.current;
+    const header = headerRef.current;
+    if (!name || !header) return;
 
-    const headerHeight = headerRef.current.offsetHeight;
-    const observer = new IntersectionObserver(
-      ([entry]) => setHeroVisible(entry.isIntersecting),
-      { rootMargin: `-${headerHeight}px 0px 0px 0px`, threshold: 0 },
-    );
-    observer.observe(hero);
-    return () => observer.disconnect();
+    let observer;
+
+    const updateObserver = () => {
+      observer?.disconnect();
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          const headerBottom = entry.rootBounds?.top ?? header.offsetHeight;
+          const passed =
+            !entry.isIntersecting &&
+            entry.boundingClientRect.bottom <= headerBottom;
+          setNameVisible(!passed);
+        },
+        { rootMargin: `-${header.offsetHeight}px 0px 0px 0px`, threshold: 0 },
+      );
+      observer.observe(name);
+    };
+
+    updateObserver();
+
+    const resizeObserver = new ResizeObserver(updateObserver);
+    resizeObserver.observe(header);
+
+    return () => {
+      resizeObserver.disconnect();
+      observer?.disconnect();
+    };
   }, []);
 
   return (
-    <div className="dark main bg-background min-h-dvh min-w-dvw flex flex-col p-4">
-      <header
-        ref={headerRef}
-        className="w-full h-fit p-2 flex flex-row justify-between items-center sticky top-0 z-50"
-      >
-        {/* container relativo: os dois textos ficam empilhados um sobre o outro */}
-        <div className="relative h-6 overflow-hidden text-foreground grid">
-          <span
-            className={`col-start-1 row-start-1 whitespace-nowrap transition-all duration-300 ease-out ${
-              heroVisible
-                ? "translate-y-0 opacity-100"
-                : "-translate-y-3 opacity-0 pointer-events-none"
-            }`}
-          >
-            {BRAND}
-          </span>
-          <span
-            className={`text-xl font-medium font-heading col-start-1 row-start-1 whitespace-nowrap transition-all duration-300 ease-out ${
-              heroVisible
-                ? "translate-y-3 opacity-0 pointer-events-none"
-                : "translate-y-0 opacity-100"
-            }`}
-          >
-            {NAME}
-          </span>
+    // overflow-x-clip (não hidden): "hidden" cria um scroll container e quebra o position: sticky
+    <div className="dark main min-h-dvh w-full overflow-x-clip bg-background">
+      <header ref={headerRef} className="sticky top-0 z-50 w-full">
+        {/* Progressive blur + leve escurecimento, se estendem um pouco abaixo do header */}
+        <ProgressiveBlur className="-z-10 h-[calc(100%+2.5rem)]" />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[calc(100%+2.5rem)] bg-linear-to-b from-background/70 to-transparent"
+        />
+
+        <div
+          className={`${CONTAINER} flex h-fit items-center justify-between py-2`}
+        >
+          <div className="relative grid h-6 overflow-hidden text-foreground">
+            <span
+              className={`col-start-1 row-start-1 whitespace-nowrap transition-all duration-300 ease-out ${
+                nameVisible
+                  ? "translate-y-0 opacity-100"
+                  : "pointer-events-none -translate-y-3 opacity-0"
+              }`}
+            >
+              {BRAND}
+            </span>
+
+            <span
+              className={`col-start-1 row-start-1 whitespace-nowrap font-heading text-lg font-medium transition-all duration-300 ease-out sm:text-xl ${
+                nameVisible
+                  ? "pointer-events-none translate-y-3 opacity-0"
+                  : "translate-y-0 opacity-100"
+              }`}
+            >
+              {NAME}
+            </span>
+          </div>
+
+          <nav className="hidden min-w-fit flex-row items-center gap-4 md:flex">
+            <Tabs
+              value={active}
+              onValueChange={handleValueChange}
+              variant="pill"
+            >
+              <TabsList>
+                {SECTIONS.map(({ id, label }) => (
+                  <TabsTrigger key={id} value={id}>
+                    {label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+
+            <Button
+              size="lg"
+              className="rounded-full p-5"
+              onClick={goToContact}
+            >
+              Entre em contato
+            </Button>
+          </nav>
+
+          <div className="md:hidden">
+            <Popover
+              open={mobileOpen}
+              onOpenChange={setMobileOpen}
+              trigger="click"
+              side="bottom"
+              align="end"
+              sideOffset={10}
+            >
+              <PopoverTrigger>
+                <button
+                  type="button"
+                  aria-label={mobileOpen ? "Fechar menu" : "Abrir menu"}
+                  className="flex size-10 items-center justify-center rounded-full border border-border text-foreground"
+                >
+                  <MenuIcon open={mobileOpen} />
+                </button>
+              </PopoverTrigger>
+
+              <PopoverContent className="w-56 p-2">
+                <nav className="flex flex-col">
+                  {SECTIONS.map(({ id, label }) => (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => {
+                        handleValueChange(id);
+                        setMobileOpen(false);
+                      }}
+                      className={`rounded-lg px-2 py-2.5 text-left text-base transition-colors ${
+                        active === id
+                          ? "bg-muted font-medium text-foreground"
+                          : "text-muted-foreground hover:bg-muted/60"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </nav>
+
+                <Button
+                  size="lg"
+                  className="mt-2 w-full rounded-full"
+                  onClick={() => {
+                    goToContact();
+                    setMobileOpen(false);
+                  }}
+                >
+                  Entre em contato
+                </Button>
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
-
-        <nav className="flex flex-row items-center gap-4 min-w-fit">
-          <Tabs value={active} onValueChange={handleValueChange} variant="pill">
-            <TabsList>
-              {SECTIONS.map(({ id, label }) => (
-                <TabsTrigger key={id} value={id}>
-                  {label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-
-          <Button
-            size="lg"
-            className="p-5 rounded-full"
-            onClick={() =>
-              document
-                .getElementById("contact")
-                ?.scrollIntoView({ behavior: "smooth" })
-            }
-          >
-            Entre em contato
-          </Button>
-        </nav>
       </header>
 
       <main>
+        {/* Hero: fundo em largura total, conteúdo dentro do container */}
         <section
           id="hero"
-          className="min-h-[95dvh] max-h-full scroll-mt-10 flex justify-around flex-wrap-reverse"
+          className="relative isolate min-h-[95dvh] scroll-mt-12"
         >
-          <div className="text-info pt-50">
-            <h1 className="text-8xl text-foreground">Derick Rufino</h1>
-            <h2>
-              <ChromaticTextReveal
-                prefix="Desenvolvedor"
-                words={["Frontend", "Web", "Mobile"]}
-                startOnView={true}
-                className="pl-1.5 shrink-0 font-light tracking-[-0.04em] text-foreground text-[clamp(2rem,7cqw,2rem)]"
-              />
-            </h2>
-          </div>
-          <div className="image-info flex flex-col items-center w-fit max-w-md pt-25">
-            <img
-              src={ProfilePic}
-              alt="Selfie de um jovem adulto, branco, cabelo escuro, sorrindo para a câmera."
-              className="w-64 aspect-square object-cover rounded-full"
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[calc(100%+180px)] overflow-hidden opacity-35 mask-[linear-gradient(to_bottom,black_55%,black_72%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_55%,black_72%,transparent_100%)]"
+          >
+            <GradientWaves
+              horizonColor="bg-background"
+              waveColor="bg-chart-2"
+              crestColor="bg-chart-3"
+              speed={0.5}
+              amplitude={2}
+              waveScale={1.2}
+              waveRatio={0.85}
+              swell={28}
+              turbulence={10}
+              tilt={1.5}
+              zoom={1.05}
+              height={4.8}
+              fogDepth={18}
+              detail="medium"
+              brightness={0.85}
+              opacity={0.9}
+              mouseInteraction
+              parallaxStrength={10}
+              grain
+              grainIntensity={0.025}
+              className="absolute inset-0"
             />
-            <p>
-              Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nobis
-              incidunt quibusdam saepe dolorum beatae nam impedit ipsa sed totam
-              ab eaque minus aliquid ducimus eveniet dolorem, porro iure sunt
-              provident!
-            </p>
+          </div>
+
+          <div
+            className={`${CONTAINER} flex min-h-[95dvh] flex-col-reverse items-center justify-center gap-10 text-center md:flex-row md:items-start md:justify-between md:gap-6 md:text-left`}
+          >
+            <div className="text-info flex flex-col items-center pt-0 md:items-start md:pt-32 lg:pt-50">
+              <h1
+                ref={nameRef}
+                className="text-5xl leading-[1.05] text-foreground sm:text-6xl md:text-7xl lg:text-8xl"
+              >
+                Derick Rufino
+              </h1>
+
+              <h2>
+                <ChromaticTextReveal
+                  prefix="Desenvolvedor"
+                  words={["Frontend", "Web", "Mobile"]}
+                  startOnView={true}
+                  className="shrink-0 pl-1.5 font-light tracking-[-0.04em] text-foreground text-[clamp(1.25rem,5cqw,2rem)]"
+                />
+              </h2>
+            </div>
+
+            <div className="image-info flex w-full max-w-xs flex-col items-center pt-4 sm:max-w-sm md:max-w-md md:pt-16 lg:pt-25">
+              <img
+                src={ProfilePic}
+                alt="Selfie de um jovem adulto, branco, cabelo escuro, sorrindo para a câmera."
+                draggable={false}
+                className="aspect-square size-40 rounded-full object-cover sm:size-52 md:size-64"
+              />
+
+              <p className="mt-4 max-w-md text-sm text-muted-foreground sm:text-base">
+                Desenvolvedor frontend e mobile, estudante de Desenvolvimento de
+                Software Multiplataforma. Trabalho com React e React Native e
+                gosto de interfaces com movimento e personalidade. Também
+                desenho e ilustro, o que me ajuda a pensar o produto além do
+                código. Atuo como freelancer e estou aberto a estágios.
+              </p>
+            </div>
           </div>
         </section>
 
-        <section id="stack" className="min-h-[90dvh] scroll-mt-10 py-4">
-          <h2>Stack</h2>
-          <ChromaGrid imageSize="sm" items={stackItems} columns={3} radius={0.1} />
-        </section>
+        <div className={CONTAINER}>
+          <section id="stack" className="scroll-mt-12 py-16">
+            <SectionHeading title="Stack">
+              O que eu uso para construir, do código ao design.
+            </SectionHeading>
+            <StackSection />
+          </section>
 
-        <section id="projects" className="min-h-[90dvh] scroll-mt-10 py-4">
-          {/* projetos aqui */}
-        </section>
+          <section id="projects" className="scroll-mt-16 py-16">
+            <SectionHeading title="Projetos">
+              Alguns projetos que representam meu trabalho com produto,
+              interface e desenvolvimento.
+            </SectionHeading>
+
+            <div className="mx-auto mt-8 grid max-w-xl grid-cols-2 items-stretch gap-3 sm:gap-4 lg:max-w-5xl lg:grid-cols-4">
+              {projects.map((project) => (
+                <ProjectCard key={project.title} project={project} />
+              ))}
+
+              <ProjectsFolder />
+            </div>
+          </section>
+        </div>
       </main>
+
       <footer>
-        <section id="contact" className="min-h-fit">
-          {/* info de contato aqui */}
-        </section>
+        <ContactSection />
       </footer>
     </div>
   );
