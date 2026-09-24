@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { ChevronDown } from "lucide-react";
 import "./index.css";
 import "./global.css";
 
@@ -90,6 +91,10 @@ function App() {
 
   const goToContact = useCallback(() => {
     document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+  }, []);
+
+  const goToStack = useCallback(() => {
+    document.getElementById("stack")?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
   useEffect(() => {
@@ -272,7 +277,7 @@ function App() {
         {/* Hero: fundo em largura total, conteúdo dentro do container */}
         <section
           id="hero"
-          className="relative isolate min-h-[95dvh] scroll-mt-12"
+          className="relative isolate flex min-h-[85dvh] flex-col scroll-mt-12 md:min-h-[95dvh]"
         >
           <div
             aria-hidden="true"
@@ -304,7 +309,7 @@ function App() {
           </div>
 
           <div
-            className={`${CONTAINER} flex min-h-[95dvh] flex-col-reverse items-center justify-center gap-10 text-center md:flex-row md:items-start md:justify-between md:gap-6 md:text-left`}
+            className={`${CONTAINER} flex min-h-[calc(85dvh-3rem)] flex-col-reverse items-center justify-center gap-8 py-4 text-center sm:gap-10 sm:py-6 md:min-h-[calc(95dvh-3rem)] md:flex-row md:items-start md:justify-between md:gap-6 md:py-0 md:text-left`}
           >
             <div className="text-info flex flex-col items-center pt-0 md:items-start md:pt-32 lg:pt-50">
               <h1
@@ -325,7 +330,7 @@ function App() {
               <CvButton className="mt-5 border border-border bg-background/40 text-foreground backdrop-blur hover:bg-muted" />
             </div>
 
-            <div className="image-info flex w-full max-w-xs flex-col items-center pt-4 sm:max-w-sm md:max-w-md md:pt-16 lg:pt-25">
+            <div className="image-info flex w-full max-w-xs flex-col items-center pt-2 sm:max-w-sm sm:pt-4 md:max-w-md md:pt-16 lg:pt-25">
               <img
                 src={ProfilePic}
                 alt="Selfie de um jovem adulto, branco, cabelo escuro, sorrindo para a câmera."
@@ -333,7 +338,7 @@ function App() {
                 className="aspect-square size-40 rounded-full object-cover sm:size-52 md:size-64"
               />
 
-              <p className="mt-4 max-w-md text-sm text-muted-foreground sm:text-base">
+              <p className="mt-3 max-w-md text-sm text-muted-foreground sm:mt-4 sm:text-base">
                 Desenvolvedor frontend e mobile, estudante de Desenvolvimento de
                 Software Multiplataforma. Trabalho com React e React Native e
                 gosto de interfaces com movimento e personalidade. Também
@@ -342,6 +347,17 @@ function App() {
               </p>
             </div>
           </div>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={goToStack}
+            className="mx-auto mb-3 mt-auto gap-1 rounded-full px-3 text-xs text-muted-foreground hover:text-foreground md:mb-4"
+            aria-label="Role para ver mais sobre minhas tecnologias"
+          >
+            Role para ver mais
+            <ChevronDown aria-hidden="true" className="size-3.5" />
+          </Button>
         </section>
 
         <div className={CONTAINER}>
