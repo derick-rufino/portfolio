@@ -26,12 +26,14 @@ try {
     throw new Error("Could not find the profile picture in Vite's build manifest.");
   }
 
-  const markup = renderToString(render("/")).replace(
-    'src="/src/assets/profile-picture.jpg"',
-    `src="/${profilePicture}"`,
+  const sourcePicturePath = "/src/assets/profile-picture.jpg";
+  const productionPicturePath = `/${profilePicture}`;
+  const markup = renderToString(render("/")).replaceAll(
+    sourcePicturePath,
+    productionPicturePath,
   );
 
-  if (markup.includes('src="/src/assets/profile-picture.jpg"')) {
+  if (markup.includes(sourcePicturePath)) {
     throw new Error("Could not replace the development URL for the profile picture.");
   }
 
