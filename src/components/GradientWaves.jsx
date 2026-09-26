@@ -78,6 +78,11 @@ const detailToSteps = (detail) => {
   return 70.0;
 };
 
+const getRenderDetail = (detail) => {
+  const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+  return coarsePointer && detail === "medium" ? "low" : detail;
+};
+
 const vertex = `#version 300 es
 in vec2 position;
 
@@ -394,12 +399,15 @@ const GradientWaves = ({
 
     if (!container) return;
 
+    const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+    const renderDetail = getRenderDetail(detail);
+
     const renderer = new Renderer({
       webgl: 2,
       alpha: true,
       premultipliedAlpha: true,
       antialias: false,
-      dpr: Math.min(window.devicePixelRatio || 1, 2),
+      dpr: Math.min(window.devicePixelRatio || 1, coarsePointer ? 1 : 2),
     });
 
     const gl = renderer.gl;
@@ -448,7 +456,7 @@ const GradientWaves = ({
         },
 
         uSteps: {
-          value: detailToSteps(detail),
+          value: detailToSteps(renderDetail),
         },
 
         uBrightness: {
@@ -665,7 +673,7 @@ const GradientWaves = ({
 
     u.uFogDepth.value = fogDepth;
 
-    u.uSteps.value = detailToSteps(detail);
+    u.uSteps.value = detailToSteps(getRenderDetail(detail));
 
     u.uBrightness.value = brightness;
 
