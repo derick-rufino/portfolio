@@ -71,6 +71,7 @@ function MenuIcon({ open }) {
 
 function App() {
   const { ready: effectsReady, reduced: reduceEffects } = useVisualEffects();
+  const [wavesReady, setWavesReady] = useState(false);
   const [active, setActive] = useState("hero");
   const [nameVisible, setNameVisible] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -79,6 +80,32 @@ function App() {
   const clickScrollTimeout = useRef(null);
   const headerRef = useRef(null);
   const nameRef = useRef(null); // h1 do hero
+
+  useEffect(() => {
+    if (!effectsReady || reduceEffects) {
+      setWavesReady(false);
+      return;
+    }
+
+    let idleCallbackId;
+    const delayId = window.setTimeout(() => {
+      if ("requestIdleCallback" in window) {
+        idleCallbackId = window.requestIdleCallback(
+          () => setWavesReady(true),
+          { timeout: 1200 },
+        );
+      } else {
+        setWavesReady(true);
+      }
+    }, 2500);
+
+    return () => {
+      window.clearTimeout(delayId);
+      if (idleCallbackId !== undefined && "cancelIdleCallback" in window) {
+        window.cancelIdleCallback(idleCallbackId);
+      }
+    };
+  }, [effectsReady, reduceEffects]);
 
   const handleValueChange = useCallback((value) => {
     isClickScroll.current = true;
@@ -167,7 +194,7 @@ function App() {
         aria-hidden="true"
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[calc(100dvh+180px)] overflow-hidden opacity-35 mask-[linear-gradient(to_bottom,black_55%,black_72%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_55%,black_72%,transparent_100%)]"
       >
-        {!effectsReady || reduceEffects ? (
+        {!effectsReady || reduceEffects || !wavesReady ? (
           <div
             className="absolute inset-0"
             style={{
