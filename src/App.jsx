@@ -5,7 +5,7 @@ import "./global.css";
 
 import { Analytics } from "@vercel/analytics/react";
 
-import ProfilePic from "./assets/profile-picture.jpg";
+import ProfilePic from "./assets/profile-picture.webp";
 
 import { Tabs, TabsList, TabsTrigger } from "@/components/motion/tabs";
 import { ChromaticTextReveal } from "@/components/motion/chromatic-text-reveal";

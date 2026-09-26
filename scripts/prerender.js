@@ -20,13 +20,13 @@ try {
   const { render } = await vite.ssrLoadModule("/src/entry-server.jsx");
   const html = await readFile(outputFile, "utf8");
   const manifest = JSON.parse(await readFile(manifestFile, "utf8"));
-  const profilePicture = manifest["src/assets/profile-picture.jpg"]?.file;
+  const profilePicture = manifest["src/assets/profile-picture.webp"]?.file;
 
   if (!profilePicture) {
     throw new Error("Could not find the profile picture in Vite's build manifest.");
   }
 
-  const sourcePicturePath = "/src/assets/profile-picture.jpg";
+  const sourcePicturePath = "/src/assets/profile-picture.webp";
   const productionPicturePath = `/${profilePicture}`;
   const markup = renderToString(render("/")).replaceAll(
     sourcePicturePath,

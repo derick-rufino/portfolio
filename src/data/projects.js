@@ -22,7 +22,7 @@ export const projects = [
     title: "Decko Bot",
     description:
       "Chatbot de IA para TCG. Refatoramento e redesign completo da UI. Implementação de auth e integração com API python",
-    image: "/decko-chatbot.jpg",
+    image: "/decko-chatbot.webp",
     url: "https://tcg-chatbot-frontend.vercel.app/chat",
     repo: "",
     badges: ["react", "tailwind", "Freelance"],
