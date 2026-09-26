@@ -12,6 +12,21 @@ import { Tooltip } from "@/components/motion/tooltip";
 import TechBadge from "@/components/TechBadge";
 import { TECH } from "@/data/tech";
 
+const BADGE_CODE = {
+  html: "</>",
+  css: "img {}",
+  javascript: "{}",
+  c: "int main()",
+  react: "</>",
+  "react-native": "</>",
+  node: "{}",
+};
+
+function getProjectCode(badges = []) {
+  const languageBadge = badges.find((id) => BADGE_CODE[id]);
+  return BADGE_CODE[languageBadge] ?? "{}";
+}
+
 export default function ProjectCard({ project }) {
   const [imgFailed, setImgFailed] = useState(false);
 
@@ -23,17 +38,18 @@ export default function ProjectCard({ project }) {
   return (
     <article
       style={{ "--tc": accent }}
-      className="group relative flex min-w-0 flex-col overflow-hidden rounded-2xl bg-card/70 transition-colors duration-300 hover:bg-card"
+      className="group relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-border/50 bg-card/70 p-2 transition-colors duration-300 hover:bg-card sm:p-2.5"
     >
       {/* Imagem */}
-      <div className="relative aspect-16/10 w-full overflow-hidden bg-[color-mix(in_oklab,var(--tc)_10%,var(--card))]">
-        {imgFailed ? (
+      <div className="relative aspect-16/10 w-full overflow-hidden rounded-xl border border-border/50 bg-[color-mix(in_oklab,var(--tc)_8%,var(--card))]">
+        {!project.image || imgFailed ? (
           <div
             aria-hidden="true"
-            className="grid size-full place-items-center font-heading text-4xl sm:text-5xl"
-            style={{ color: `color-mix(in oklab, ${accent} 55%, transparent)` }}
+            className="grid size-full place-items-center bg-[color-mix(in_oklab,var(--tc)_8%,var(--card))]"
           >
-            {project.title[0]}
+            <span className="font-mono text-3xl font-medium tracking-tight text-[color-mix(in_oklab,var(--tc)_48%,var(--muted-foreground))] opacity-75 sm:text-4xl">
+              {getProjectCode(project.badges)}
+            </span>
           </div>
         ) : (
           <img
@@ -41,6 +57,7 @@ export default function ProjectCard({ project }) {
             alt={`Preview do projeto ${project.title}`}
             draggable={false}
             loading="lazy"
+            decoding="async"
             onError={() => setImgFailed(true)}
             className="size-full object-cover transition-transform duration-500 ease-out motion-safe:group-hover:scale-[1.03]"
           />
@@ -48,7 +65,7 @@ export default function ProjectCard({ project }) {
       </div>
 
       {/* Conteúdo */}
-      <div className="flex flex-1 flex-col gap-2 p-3 sm:gap-2.5 sm:p-4">
+      <div className="flex flex-1 flex-col gap-2 p-2 sm:gap-2.5 sm:p-3">
         <div className="flex items-start justify-between gap-2">
           <h3 className="min-w-0 text-sm leading-tight font-medium text-foreground sm:text-base">
             {hasSite ? (

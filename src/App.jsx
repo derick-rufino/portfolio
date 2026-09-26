@@ -419,7 +419,7 @@ function App() {
               interface e desenvolvimento.
             </SectionHeading>
 
-            <div className="mx-auto mt-8 grid max-w-xl grid-cols-1 items-stretch gap-3 sm:gap-4 lg:max-w-5xl lg:grid-cols-4">
+            <div className="mt-8 grid w-full grid-cols-1 items-stretch gap-3 sm:gap-4 lg:grid-cols-4">
               {projects.map((project) => (
                 <ProjectCard key={project.title} project={project} />
               ))}

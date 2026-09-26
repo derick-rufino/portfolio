@@ -2,11 +2,13 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/figtree";
+@import "@fontsource/jetbrains-mono/latin-400.css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --font-heading: "MuseoModerno", var(--font-sans);
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
   --font-sans: 'Figtree Variable', sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);

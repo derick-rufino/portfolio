@@ -13,7 +13,7 @@ export const projects = [
     title: "Tuctuc",
     description:
       "Aplicativo mobile de caronas para estudantes, desenvolvido como projeto de TCC.",
-    image: "/projects/tuctuc.webp",
+    image: null,
     url: "",
     repo: "",
     badges: ["react-native", "expo", "socketio", "mysql"],
@@ -31,7 +31,7 @@ export const projects = [
     title: "API Amigo Secreto",
     description:
       "Sistema para realizar sorteios de amigo secreto com autenticação, usuários não retiram a si mesmos. Visualização individual dos resultados.",
-    image: "/projects/project-03.webp",
+    image: null,
     url: "#",
     repo: "https://github.com/derick-rufino/api-amigo-secreto",
     badges: ["node", "express", "jwt", "swagger", "api"],
